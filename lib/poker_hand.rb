@@ -1,38 +1,102 @@
 def poker_hand(hand)
-  card_values = {"2" => 2, "3" => 3, "4" => 4, "5" => 5, "6" => 6, "7" => 7, "8" => 8, "9" => 9, "t" => 10, "j" => 11, "q" => 12, "k" => 13, "a" => 14}
   value = []
   suit = []
-  keys = []
-  values = []
 
   hand.each do |i|
-    if i.length == 2
+    if i.length == 3
       value << 10
       suit << i[-1]
     else
-    value << i[0].to_i
-    suit << i[1]
+      if i[0] == "j"
+        value << 11
+        suit << i[1]
+      elsif i[0] == "q"
+        value << 12
+        suit << i[1]
+      elsif i[0] == "k"
+        value << 13
+        suit << i[1]
+      elsif i[0] == "a"
+        value << 14
+        suit << i[1]
+      else
+        value << i[0].to_i
+        suit << i[1]
+      end
     end
   end
 
-  value.each do |j|
-    keys << card_value.key(j)
-    end
-  keys.each do |k|
-    values << keys.value(k)
-  end
 
-  consecutive = values.sort.each_cons(2).all? { |x,y| y == x + 1 }
+  value = value.sort
+  puts value
+
+  two_of_a_kind_counter = 0
+  four_of_a_kind_counter = 0
+  three_of_a_kind_counter = 0
+
+  full_house_begin = value[0..2].all? {|x| x == value[0]}
+  full_house_two_begin = value[0..1].all? {|x| x == value[0]}
+  full_house_two_end = value[3..4].all? {|x| x == value[3]}
+  full_house_end = value[2..4].all? {|x| x == value[2]}
+  consecutive = value.sort.each_cons(2).all? { |x,y| y == x + 1 }
   same_suit = suit.all? {|x| x == suit[0]}
 
-  if consecutive == true && same_suit == true
+  if full_house_begin && full_house_two_end
+    fullhouse = true
+    value.delete(0..4)
+  elsif full_house_two_begin && full_house_end
+    fullhouse = true
+    value.delete(0..4)
+  else
+    fullhouse = false
+  end
+
+  2.times do |i|
+        four_of_a_kind = value[i..(i + 3)].all? {|x| x == value[i]}
+        if four_of_a_kind
+          four_of_a_kind_counter += 1
+          end
+        end
+
+  3.times do |i|
+        three_of_a_kind = value[i..(i + 2)].all? {|x| x == value[i]}
+        if three_of_a_kind
+          three_of_a_kind_counter += 1
+          end
+        end
+
+  4.times do |i|
+        two_of_a_kind = value[i..(i + 1)].all? {|x| x == value[i]}
+        if two_of_a_kind
+          two_of_a_kind_counter += 1
+          end
+        end
+
+
+  if consecutive && same_suit
     puts "straight flush"
+  elsif four_of_a_kind_counter > 0
+    puts "four of a kind"
+  elsif fullhouse == true
+    puts "full house"
+  elsif same_suit
+    puts "flush"
+  elsif consecutive
+    puts "straight"
+  elsif three_of_a_kind_counter > 0
+    puts "three of a kind"
+  elsif two_of_a_kind_counter > 1
+    puts "two pair"
+  elsif two_of_a_kind_counter == 1
+    puts "one pair"
+  else
+    puts "sorry loser, you have a bad hand!"
 
   end
 
 end
 
-poker_hand(["9s", "10s", "js", "qs", "ks"])
+poker_hand(["9h", "7d", "8s", "8s", "10s"])
 
 
 
